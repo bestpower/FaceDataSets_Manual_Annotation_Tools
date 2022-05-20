@@ -12,8 +12,8 @@ import logging.handlers
 from PIL import Image
 
 
-logging.FileHandler(filename='Face_data_train_mark.log', mode='a', encoding='utf-8')
-logging.basicConfig(filename='Face_data_train_mark.log', filemode='a', level=logging.INFO)
+logging.FileHandler(filename='Face_data_mark.log', mode='a', encoding='utf-8')
+logging.basicConfig(filename='Face_data_mark.log', filemode='a', level=logging.INFO)
 
 def myInput(prompt):
     """
@@ -53,12 +53,12 @@ def replaceLine(txt_path, oldLine, newLine):
         fw.close()
 
 
-def imgShowAndMark(img_path, label_txt_path, relaceLineNum):
+def imgShowAndMark(img_path, label_txt_path, current_line):
     """
     指定图片提示标记
     :param img_path: 待标记图片路径
-    :param current_line: 当前标记对比内容
     :param img_txt:  待标记图片标签路径
+    :param current_line: 当前标记对比内容
     :return:
     """
 
@@ -74,7 +74,7 @@ def imgShowAndMark(img_path, label_txt_path, relaceLineNum):
     plt.margins(0, 0)
     plt.show()
 
-    if relaceLineNum != None:
+    if current_line != None:
         # 获取待标注目标行原信息
         global linelist
         with open(label_txt_path, 'r') as fr:
@@ -87,7 +87,7 @@ def imgShowAndMark(img_path, label_txt_path, relaceLineNum):
                 oldLine = line
 
         # 根据对比信息标注新的属性值
-        newLine = myInput("请输入当前图片姿态 Yaw Pitch Roll 属性，已标注属性提示为：" + str(relaceLineNum))
+        newLine = myInput("请输入当前图片姿态 Yaw Pitch Roll 属性，已标注属性提示为：" + str(current_line))
         print("你输入的属性值为，{}！".format(newLine).strip())
         # 用新标注行替换原标注行
         replaceLine(label_txt_path, oldLine, newLine)
@@ -119,7 +119,7 @@ def MarkToolWithImg(wait_mark_image_root_path, output_label_txt_path):
                 print(img_path + " 已标记过")
             else:
                 print("正在标记：" + str(img_path))
-                imgShowAndMark(img_path, None, output_label_txt_path)
+                imgShowAndMark(img_path, output_label_txt_path, None)
 
 def MarkToolWithTxt(label_txt_path):
     """
@@ -147,7 +147,7 @@ def MarkToolWithTxt(label_txt_path):
                         is_mark = True
                 if is_mark is False:
                     print("正在标注：" + str(img_path))
-                    imgShowAndMark(img_path, line, label_txt_path)
+                    imgShowAndMark(img_path, label_txt_path, line)
             except Exception as e:
                 print("标注结束：" + str(e))
                 break
@@ -172,9 +172,9 @@ def addFacePoseLabel(img_root_path, output_txt):
 
 if __name__ == '__main__':
     # 标签文件
-    output_label_txt_path = "./data/train/train.txt"
+    output_label_txt_path = "./train.txt"
     # 运行标注工具
-    MarkToolWithImg("wait_mark_image_root_path", output_label_txt_path)
-    MarkToolWithTxt(output_label_txt_path)
+    MarkToolWithImg("./images", output_label_txt_path)
+    # MarkToolWithTxt(output_label_txt_path)
 
     # addLabelFlag("./data/train/no_meet_train.txt")
